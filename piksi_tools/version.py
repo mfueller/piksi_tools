@@ -120,14 +120,14 @@ def get_git_version():
 
 
 def pep386adapt(version):
-    if version is not None and '-' in version:
+    if version is not None and b'-' in version:
         # adapt git-describe version to be in line with PEP 386
         # Break PEP 386 a bit here and append the Git hash
-        parts = version.split('-')
+        parts = version.split(b'-')
         if len(parts) > 2:
           version = '%s.post%s-%s' % (
               parts[0], parts[1],
-              '-'.join(parts[2:])
+              b'-'.join(parts[2:])
           )
         return version
     else:
