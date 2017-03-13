@@ -85,7 +85,7 @@ class TrackingView(HasTraits):
     self.time[0:-1] = self.time[1:]
     self.time[-1] = t
     # first we loop over all the SIDs / channel keys we have stored and set 0 in for CN0
-    for key, cno_array in self.CN0_dict.items():
+    for key, cno_array in list(self.CN0_dict.items()):
       # p
       if (cno_array==0).all():
         self.CN0_dict.pop(key)
@@ -114,19 +114,19 @@ class TrackingView(HasTraits):
     self.plot_data.set_data('t', self.time)
     # Remove any stale plots that got removed from the dictionary
     for each in self.plot_data.list_data():
-      if each not in [str(a) for a in self.CN0_dict.keys()] and each != 't':
+      if each not in [str(a) for a in list(self.CN0_dict.keys())] and each != 't':
         try:
           self.plot_data.del_data(each)
           self.plot.delplot(each)
         except KeyError:
           pass
-    for k, cno_array in self.CN0_dict.items():
+    for k, cno_array in list(self.CN0_dict.items()):
       key = str(k)
       # set plot data and create plot for any selected for display
       if ((self.show_l2 and int(k[0]) in L2_CODES) or
           (self.show_l1 and int(k[0]) in L1_CODES)):
           self.plot_data.set_data(key, cno_array)
-          if key not in self.plot.plots.keys():
+          if key not in list(self.plot.plots.keys()):
             pl = self.plot.plot(('t', key), type='line', color=get_color(k),
                                 name=key)
           else:
@@ -140,9 +140,9 @@ class TrackingView(HasTraits):
       else:
         if key in self.plot_data.list_data():
           self.plot_data.del_data(key)
-        if key in self.plot.plots.keys():
+        if key in list(self.plot.plots.keys()):
           self.plot.delplot(key)
-    plots = dict(zip(plot_labels, plots))
+    plots = dict(list(zip(plot_labels, plots)))
     self.plot.legend.plots = plots
 
   def _legend_visible_changed(self):

@@ -80,7 +80,7 @@ try:
   show_usage = args.help
   error_str = ""
 except (ArgumentParserError, argparse.ArgumentError, argparse.ArgumentTypeError) as e:
- print e
+ print(e)
  show_usage = True
  error_str = "ERROR: " + str(e) 
  pass
@@ -209,7 +209,7 @@ class SwiftConsole(HasTraits):
   settings_view = Instance(SettingsView)
   update_view = Instance(UpdateView)
   imu_view = Instance(IMUView)
-  log_level_filter = Enum(list(SYSLOG_LEVELS.itervalues()))
+  log_level_filter = Enum(list(SYSLOG_LEVELS.values()))
 
 
   """"
@@ -346,7 +346,7 @@ class SwiftConsole(HasTraits):
         self.console_output.write_level(eachline,
                                         str_to_log_level(eachline.split(':')[0]))
     except UnicodeDecodeError:
-      print "Critical Error encoding the serial stream as ascii."
+      print("Critical Error encoding the serial stream as ascii.")
 
   def log_message_callback(self, sbp_msg, **metadata):
     try:
@@ -354,18 +354,18 @@ class SwiftConsole(HasTraits):
       for eachline in reversed(encoded.split('\n')):
         self.console_output.write_level(eachline, sbp_msg.level)
     except UnicodeDecodeError:
-      print "Critical Error encoding the serial stream as ascii."
+      print("Critical Error encoding the serial stream as ascii.")
 
   def ext_event_callback(self, sbp_msg, **metadata):
     e = MsgExtEvent(sbp_msg)
-    print 'External event: %s edge on pin %d at wn=%d, tow=%d, time qual=%s' % (
+    print(('External event: %s edge on pin %d at wn=%d, tow=%d, time qual=%s' % (
       "Rising" if (e.flags & (1<<0)) else "Falling", e.pin, e.wn, e.tow,
-      "good" if (e.flags & (1<<1)) else "unknown")
+      "good" if (e.flags & (1<<1)) else "unknown")))
 
   def cmd_resp_callback(self, sbp_msg, **metadata):
     r = MsgCommandResp(sbp_msg)
-    print "Received a command response message with code {0}".format(
-           r.code)
+    print(("Received a command response message with code {0}".format(
+           r.code)))
 
   def _paused_button_fired(self):
     self.console_output.paused = not self.console_output.paused
@@ -432,14 +432,14 @@ class SwiftConsole(HasTraits):
 
   def _csv_logging_button_action(self):
     if self.csv_logging and self.baseline_view.logging_b and self.solution_view.logging_p and self.solution_view.logging_v:
-      print "Stopped CSV logging"
+      print("Stopped CSV logging")
       self.csv_logging =  False
       self.baseline_view.logging_b = False
       self.solution_view.logging_p = False
       self.solution_view.logging_v = False
 
     else:
-      print "Started CSV logging at %s" % self.directory_name
+      print(("Started CSV logging at %s" % self.directory_name))
       self.csv_logging = True
       self.baseline_view.logging_b = True
       self.solution_view.logging_p = True
@@ -465,11 +465,11 @@ class SwiftConsole(HasTraits):
 
   def _json_logging_button_action(self):
     if self.first_json_press and self.json_logging:
-      print "JSON Logging initiated via CMD line.  Please press button again to stop logging"
+      print("JSON Logging initiated via CMD line.  Please press button again to stop logging")
     elif self.json_logging:
       self._stop_json_logging()
       self.json_logging = False
-      print "Stopped JSON logging"
+      print("Stopped JSON logging")
     else:
       self._start_json_logging()
       self.json_logging = True
@@ -559,9 +559,9 @@ class SwiftConsole(HasTraits):
         try:
           skylark_dict = yaml.load(skylark)
         except yaml.YAMLError:
-          print "Unable to interpret Skylark cmdline argument.  It will be ignored."
+          print("Unable to interpret Skylark cmdline argument.  It will be ignored.")
           import traceback
-          print traceback.format_exc()
+          print((traceback.format_exc()))
           skylark_dict = {}
       else:
         skylark_dict = {}
@@ -698,7 +698,7 @@ class PortChooser(HasTraits):
       pass
 if show_usage:
   usage_str = parser.format_help()
-  print usage_str
+  print(usage_str)
   usage = ShowUsage(usage_str, error_str)
   usage.configure_traits()
   sys.exit(1)
@@ -716,7 +716,7 @@ if port and args.tcp:
     sys.exit(1)
 elif port and args.file:
   # Use file and interpret port arg as the file
-    print "Using file '%s'" % port
+    print(("Using file '%s'" % port))
     selected_driver = s.get_driver(args.ftdi, port, baud, args.file)
     connection_description = os.path.split(port)[-1] 
 elif not port:
@@ -730,21 +730,21 @@ elif not port:
   mode = port_chooser.mode
   # if the user pressed cancel or didn't select anything
   if not (port or (ip_address and ip_port)) or not is_ok:
-    print "No Interface selected!"
+    print("No Interface selected!")
     sys.exit(1)
   else:
     # Use either TCP/IP or serial selected from gui
     if mode == "TCP/IP":
-      print "Using TCP/IP at address %s and port %d" % (ip_address, ip_port)
+      print(("Using TCP/IP at address %s and port %d" % (ip_address, ip_port)))
       selected_driver = TCPDriver(ip_address, int(ip_port))
       connection_description = ip_address + ":" + str(ip_port)
     else:
-      print "Using serial device '%s'" % port
+      print(("Using serial device '%s'" % port))
       selected_driver = s.get_driver(args.ftdi, port, baud, args.file)
       connection_description = os.path.split(port)[-1]  + " @" + str(baud)
 else:
   # Use the port passed and assume serial connection
-  print "Using serial device '%s'" % port
+  print(("Using serial device '%s'" % port))
   selected_driver = s.get_driver(args.ftdi, port, baud, args.file)
   connection_description = os.path.split(port)[-1]  + " @" + str(baud)
   

@@ -24,7 +24,7 @@ images.
 """
 
 import sys
-import serial_link
+from . import serial_link
 import threading
 import random
 
@@ -32,7 +32,7 @@ from sbp.bootload import *
 from sbp.logging import *
 from sbp.piksi import *
 from sbp.client import Handler, Framer
-from fileio import FileIO
+from .fileio import FileIO
 
 def get_args():
   """
@@ -69,7 +69,7 @@ def shell_command(link, cmd, timeout=None, progress_cb=None):
     if progress_cb:
       progress_cb(float(elapsed_intervals) / float(timeout) * 100)
     elapsed_intervals += 1
-  if len(ret.items()) == 0:
+  if len(list(ret.items())) == 0:
     printf(("Shell command timeout: execution exceeded {0} "
            "seconds with no response.").format(timeout))
     return -255
@@ -99,7 +99,7 @@ def main():
       print('Committing file to flash...')
       code = shell_command(link, "upgrade_tool upgrade.image_set.bin", 300)
       if code != 0:
-        print('Failed to perform upgrade (code = %d)' % code)
+        print(('Failed to perform upgrade (code = %d)' % code))
         return
       print('Resetting Piksi...')
       link(MsgReset(flags=0))

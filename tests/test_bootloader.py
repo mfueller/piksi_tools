@@ -61,13 +61,13 @@ def test_setup(port1, port2, stm_fw, nap_fw, verbose, n_queue):
   n_queue : int
     Number of flash operations to queue.
   """
-  if verbose: print "--- Setting up device for tests ---"
+  if verbose: print("--- Setting up device for tests ---")
 
   with serial_link.get_driver(use_ftdi=False, port=port1) as driver:
     with Handler(driver.read, driver.write) as handler:
       setup_piksi(handler, stm_fw, nap_fw, verbose)
 
-  if verbose: print ""
+  if verbose: print("")
 
   # Hack: Wait a bit for 'Piksi Disconnected'
   # print from sbp.client.handler.Handler
@@ -152,7 +152,7 @@ class TestBootloader(unittest.TestCase):
     """ Get Piksi bootloader/firmware/NAP version from device. """
     unittest.skipIf(self.skip_single, 'Skipping single Piksi tests')
 
-    if self.verbose: print "--- test_get_versions ---"
+    if self.verbose: print("--- test_get_versions ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
@@ -161,34 +161,34 @@ class TestBootloader(unittest.TestCase):
 
           # Get bootloader version, print, and jump to application firmware.
           with Timeout(TIMEOUT_BOOT) as timeout:
-            if self.verbose: print "Waiting for bootloader handshake"
+            if self.verbose: print("Waiting for bootloader handshake")
             piksi_bootloader.handshake()
           piksi_bootloader.jump_to_app()
-          print "Piksi Bootloader Version:", piksi_bootloader.version
+          print("Piksi Bootloader Version:", piksi_bootloader.version)
 
         # Wait for heartbeat, get settings, print firmware/NAP versions.
         heartbeat = Heartbeat()
         handler.add_callback(heartbeat, SBP_MSG_HEARTBEAT)
-        if self.verbose: print "Waiting to receive heartbeat"
+        if self.verbose: print("Waiting to receive heartbeat")
         while not heartbeat.received:
           time.sleep(0.1)
-        if self.verbose: print "Received hearbeat"
+        if self.verbose: print("Received hearbeat")
         handler.remove_callback(heartbeat, SBP_MSG_HEARTBEAT)
 
-        if self.verbose: print "Getting Piksi settings"
+        if self.verbose: print("Getting Piksi settings")
         settings = self.get_piksi_settings(handler)
 
-        if self.verbose: print "Piksi Firmware Version:", \
-                          settings['system_info']['firmware_version']
+        if self.verbose: print("Piksi Firmware Version:", \
+                          settings['system_info']['firmware_version'])
 
-        if self.verbose: print "Piksi NAP Version:", \
-                          settings['system_info']['nap_version']
+        if self.verbose: print("Piksi NAP Version:", \
+                          settings['system_info']['nap_version'])
 
   def test_btldr_handshake(self):
     """ Test setting Piksi into bootloader mode. """
     unittest.skipIf(self.skip_single, 'Skipping single Piksi tests')
 
-    if self.verbose: print "--- test_btldr_handshake ---"
+    if self.verbose: print("--- test_btldr_handshake ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
@@ -197,10 +197,10 @@ class TestBootloader(unittest.TestCase):
           # If the Piksi bootloader successfully received our handshake, we
           # should be able to receive handshakes from it indefinitely. Test
           # this a few times.
-          if self.verbose: print "Setting Piksi into bootloader mode"
+          if self.verbose: print("Setting Piksi into bootloader mode")
           with Timeout(TIMEOUT_BOOT) as timeout:
             piksi_bootloader.handshake()
-          if self.verbose: print "Testing bootloader handshake replies"
+          if self.verbose: print("Testing bootloader handshake replies")
           for i in range(10):
             time.sleep(1)
             with Timeout(TIMEOUT_BOOT) as timeout:
@@ -210,7 +210,7 @@ class TestBootloader(unittest.TestCase):
     """ Test flashing STM hexfile. """
     unittest.skipIf(self.skip_single, 'Skipping single Piksi tests')
 
-    if self.verbose: print "--- test_flash_stm_firmware ---"
+    if self.verbose: print("--- test_flash_stm_firmware ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
@@ -220,21 +220,21 @@ class TestBootloader(unittest.TestCase):
         with Bootloader(handler) as piksi_bootloader:
 
           with Timeout(TIMEOUT_BOOT) as timeout:
-            if self.verbose: print "Waiting for bootloader handshake"
+            if self.verbose: print("Waiting for bootloader handshake")
             piksi_bootloader.handshake()
-            if self.verbose: print "Received bootloader handshake"
+            if self.verbose: print("Received bootloader handshake")
 
           with Flash(handler, flash_type="STM",
                      sbp_version=piksi_bootloader.sbp_version) as piksi_flash:
             # Erase entire STM flash (except bootloader).
-            if self.verbose: print "Erasing STM"
+            if self.verbose: print("Erasing STM")
             with Timeout(TIMEOUT_ERASE_STM) as timeout:
               for s in range(1,12):
                 piksi_flash.erase_sector(s)
             # Write STM firmware.
             with Timeout(TIMEOUT_PROGRAM_STM) as timeout:
               if self.verbose:
-                if self.verbose: print "Programming STM"
+                if self.verbose: print("Programming STM")
                 piksi_flash.write_ihx(self.stm_fw, sys.stdout, 0x10, erase=False)
               else:
                 piksi_flash.write_ihx(self.stm_fw, erase=False)
@@ -243,7 +243,7 @@ class TestBootloader(unittest.TestCase):
     """ Test flashing NAP hexfile. """
     unittest.skipIf(self.skip_single, 'Skipping single Piksi tests')
 
-    if self.verbose: print "--- test_flash_nap_firmware ---"
+    if self.verbose: print("--- test_flash_nap_firmware ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
@@ -251,15 +251,15 @@ class TestBootloader(unittest.TestCase):
         with Bootloader(handler) as piksi_bootloader:
 
           with Timeout(TIMEOUT_BOOT) as timeout:
-            if self.verbose: print "Waiting for bootloader handshake"
+            if self.verbose: print("Waiting for bootloader handshake")
             piksi_bootloader.handshake()
-            if self.verbose: print "Received bootloader handshake"
+            if self.verbose: print("Received bootloader handshake")
 
           with Flash(handler, flash_type='M25',
                      sbp_version=piksi_bootloader.sbp_version) as piksi_flash:
             with Timeout(TIMEOUT_WRITE_NAP) as timeout:
               if self.verbose:
-                print "Writing firmware to NAP flash"
+                print("Writing firmware to NAP flash")
                 piksi_flash.write_ihx(self.nap_fw, sys.stdout, mod_print=0x10)
               else:
                 piksi_flash.write_ihx(self.nap_fw)
@@ -271,20 +271,20 @@ class TestBootloader(unittest.TestCase):
     SECTOR = 0
     ADDRESS = 0x08003FFF
 
-    if self.verbose: print "--- test_program_btldr ---"
+    if self.verbose: print("--- test_program_btldr ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
 
         with Bootloader(handler) as piksi_bootloader:
           with Timeout(TIMEOUT_BOOT) as timeout:
-            if self.verbose: print "Waiting for bootloader handshake"
+            if self.verbose: print("Waiting for bootloader handshake")
             piksi_bootloader.handshake()
           with Flash(handler, flash_type='STM',
                      sbp_version=piksi_bootloader.sbp_version) as piksi_flash:
             # Make sure the bootloader sector is locked.
             with Timeout(TIMEOUT_LOCK_SECTOR) as timeout:
-              if self.verbose: print "Locking STM sector:", SECTOR
+              if self.verbose: print("Locking STM sector:", SECTOR)
               piksi_flash.lock_sector(SECTOR)
             # Make sure the address to test isn't already programmed.
             with Timeout(TIMEOUT_READ_STM) as timeout:
@@ -292,7 +292,7 @@ class TestBootloader(unittest.TestCase):
             self.assertEqual('\xFF', byte_read,
                              "Address to program is already programmed")
             # Attempt to write 0x00 to last address of the sector.
-            if self.verbose: print "Attempting to lock STM sector:", SECTOR
+            if self.verbose: print("Attempting to lock STM sector:", SECTOR)
             piksi_flash.program(0x08003FFF, '\x00')
             with Timeout(TIMEOUT_READ_STM) as timeout:
               byte_read = piksi_flash.read(0x08003FFF, 1, block=True)
@@ -305,44 +305,44 @@ class TestBootloader(unittest.TestCase):
 
     SECTOR = 0
 
-    if self.verbose: print "--- test_erase_btldr ---"
+    if self.verbose: print("--- test_erase_btldr ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
 
         with Bootloader(handler) as piksi_bootloader:
           with Timeout(TIMEOUT_BOOT) as timeout:
-            if self.verbose: print "Waiting for bootloader handshake"
+            if self.verbose: print("Waiting for bootloader handshake")
             piksi_bootloader.handshake()
           with Flash(handler, flash_type='STM',
                      sbp_version=piksi_bootloader.sbp_version) as piksi_flash:
             # Make sure the bootloader sector is locked.
             with Timeout(TIMEOUT_LOCK_SECTOR) as timeout:
-              if self.verbose: print "Locking STM sector:", SECTOR
+              if self.verbose: print("Locking STM sector:", SECTOR)
               piksi_flash.lock_sector(SECTOR)
             # Attempt to erase the sector.
             with Timeout(TIMEOUT_ERASE_SECTOR) as timeout:
-              if self.verbose: print "Attempting to erase STM sector:", SECTOR
+              if self.verbose: print("Attempting to erase STM sector:", SECTOR)
               piksi_flash.erase_sector(SECTOR, warn=False)
             # If the sector was successfully erased, we should timeout here
             # as the bootloader will stop sending handshakes.
             with Timeout(TIMEOUT_BOOT) as timeout:
-              if self.verbose: print "Waiting for bootloader handshake"
+              if self.verbose: print("Waiting for bootloader handshake")
               piksi_bootloader.handshake()
 
   def test_jump_to_app(self):
     """ Test that we can jump to the application after programming. """
     unittest.skipIf(self.skip_single, 'Skipping single Piksi tests')
 
-    if self.verbose: print "--- test_jump_to_app ---"
+    if self.verbose: print("--- test_jump_to_app ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
 
         with Bootloader(handler) as piksi_bootloader:
-          if self.verbose: print "Handshaking with bootloader"
+          if self.verbose: print("Handshaking with bootloader")
           piksi_bootloader.handshake()
-          if self.verbose: print "Jumping to application"
+          if self.verbose: print("Jumping to application")
           piksi_bootloader.jump_to_app()
 
         # If we succesfully jump to the application, we should receive
@@ -352,10 +352,10 @@ class TestBootloader(unittest.TestCase):
           heartbeat = Heartbeat()
           handler.add_callback(heartbeat, SBP_MSG_HEARTBEAT)
 
-          if self.verbose: print "Waiting to receive heartbeat"
+          if self.verbose: print("Waiting to receive heartbeat")
           while not heartbeat.received:
             time.sleep(0.1)
-          if self.verbose: print "Received hearbeat"
+          if self.verbose: print("Received hearbeat")
 
           handler.remove_callback(heartbeat, SBP_MSG_HEARTBEAT)
 
@@ -366,7 +366,7 @@ class TestBootloader(unittest.TestCase):
     """
     unittest.skipIf(self.skip_single, 'Skipping single Piksi tests')
 
-    if self.verbose: print "--- test_btldr_handshake_wrong_sender_id ---"
+    if self.verbose: print("--- test_btldr_handshake_wrong_sender_id ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
@@ -376,16 +376,16 @@ class TestBootloader(unittest.TestCase):
 
         # Reset Piksi, and attempt to handshake into bootloader mode with an
         # incorrect sender ID.
-        if self.verbose: print "Sending reset"
+        if self.verbose: print("Sending reset")
         handler.send(SBP_MSG_RESET, "")
 
         with Bootloader(handler) as piksi_bootloader:
           with Timeout(TIMEOUT_BOOT) as timeout:
-            if self.verbose: print "Waiting for bootloader handshake from device"
+            if self.verbose: print("Waiting for bootloader handshake from device")
             while not piksi_bootloader.handshake_received:
               time.sleep(0.1)
-        if self.verbose: print "Received handshake"
-        if self.verbose: print "Sending handshake with incorrect sender ID"
+        if self.verbose: print("Received handshake")
+        if self.verbose: print("Sending handshake with incorrect sender ID")
         handler.send(SBP_MSG_BOOTLOADER_HANDSHAKE_REQ, '\x00', sender=0x41)
 
         # We should receive a heartbeat if the handshake was unsuccessful.
@@ -394,10 +394,10 @@ class TestBootloader(unittest.TestCase):
           heartbeat = Heartbeat()
           handler.add_callback(heartbeat, SBP_MSG_HEARTBEAT)
 
-          if self.verbose: print "Waiting to receive heartbeat"
+          if self.verbose: print("Waiting to receive heartbeat")
           while not heartbeat.received:
             time.sleep(0.1)
-          if self.verbose: print "Received hearbeat"
+          if self.verbose: print("Received hearbeat")
 
           handler.remove_callback(heartbeat, SBP_MSG_HEARTBEAT)
 
@@ -408,7 +408,7 @@ class TestBootloader(unittest.TestCase):
     SECTOR = 1
     SENDER_ID = 0x41
 
-    if self.verbose: print "--- test_flashing_wrong_sender_id ---"
+    if self.verbose: print("--- test_flashing_wrong_sender_id ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
@@ -416,19 +416,19 @@ class TestBootloader(unittest.TestCase):
         # Verify that flash erase times out when using incorrect sender ID.
         with Bootloader(handler) as piksi_bootloader:
           with Timeout(TIMEOUT_BOOT) as timeout:
-            print "Handshaking with bootloader"
+            print("Handshaking with bootloader")
             piksi_bootloader.handshake()
           with Flash(handler, flash_type='STM',
                      sbp_version=piksi_bootloader.sbp_version) as piksi_flash:
             try:
               with Timeout(TIMEOUT_ERASE_SECTOR) as timeout:
-                if self.verbose: print "Attempting to erase sector with incorrect sender ID"
+                if self.verbose: print("Attempting to erase sector with incorrect sender ID")
                 msg_buf = struct.pack("BB", piksi_flash.flash_type_byte, SECTOR)
                 handler.send(SBP_MSG_FLASH_ERASE, msg_buf, sender=SENDER_ID)
                 handler.wait(SBP_MSG_FLASH_DONE, TIMEOUT_ERASE_SECTOR+1)
                 raise Exception("Should have timed out but didn't")
             except TimeoutError:
-              if self.verbose: print "Timed out as expected"
+              if self.verbose: print("Timed out as expected")
 
   def test_sector_lock_unlock(self):
     """ Test if we can lock / unlock sectors. """
@@ -437,16 +437,16 @@ class TestBootloader(unittest.TestCase):
     SECTOR = 1
     ADDRESS = 0x08004000
 
-    if self.verbose: print "--- test_sector_lock_unlock ---"
+    if self.verbose: print("--- test_sector_lock_unlock ---")
 
     with serial_link.get_driver(use_ftdi=False, port=self.port1) as driver:
       with Handler(driver.read, driver.write) as handler:
 
         with Bootloader(handler) as piksi_bootloader:
           with Timeout(TIMEOUT_BOOT) as timeout:
-            if self.verbose: print "Waiting for bootloader handshake"
+            if self.verbose: print("Waiting for bootloader handshake")
             piksi_bootloader.handshake()
-          if self.verbose: print "Handshaked with bootloader"
+          if self.verbose: print("Handshaked with bootloader")
 
           with Flash(handler, flash_type='STM',
                      sbp_version=piksi_bootloader.sbp_version) as piksi_flash:
@@ -454,44 +454,44 @@ class TestBootloader(unittest.TestCase):
             try:
               # Erase the sector, lock it, and attempt to write to it.
               with Timeout(TIMEOUT_ERASE_SECTOR) as timeout:
-                if self.verbose: print "Erasing STM sector:", SECTOR
+                if self.verbose: print("Erasing STM sector:", SECTOR)
                 piksi_flash.erase_sector(SECTOR)
 
               with Timeout(TIMEOUT_LOCK_SECTOR) as timeout:
-                if self.verbose: print "Locking STM sector:", SECTOR
+                if self.verbose: print("Locking STM sector:", SECTOR)
                 piksi_flash.lock_sector(SECTOR)
-              if self.verbose: print "Attempting to program address:", hex(ADDRESS)
+              if self.verbose: print("Attempting to program address:", hex(ADDRESS))
               piksi_flash.program(ADDRESS, '\x00')
               with Timeout(TIMEOUT_READ_STM) as timeout:
                 byte_read = piksi_flash.read(ADDRESS, 1, block=True)
               self.assertEqual('\xFF', byte_read, \
                                "Address was programmed")
-              if self.verbose: print "Program failed as expected"
+              if self.verbose: print("Program failed as expected")
 
               # Unlock the sector, and attempt to write to it.
               with Timeout(TIMEOUT_LOCK_SECTOR) as timeout:
-                if self.verbose: print "Unlocking STM sector:", SECTOR
+                if self.verbose: print("Unlocking STM sector:", SECTOR)
                 piksi_flash.unlock_sector(SECTOR)
-              if self.verbose: print "Attempting to program address:", hex(ADDRESS)
+              if self.verbose: print("Attempting to program address:", hex(ADDRESS))
               piksi_flash.program(ADDRESS, '\x00')
               with Timeout(TIMEOUT_READ_STM) as timeout:
                 byte_read = piksi_flash.read(ADDRESS, 1, block=True)
               self.assertEqual('\x00', byte_read, \
                                "Address was not programmed")
-              if self.verbose: print "Program was successful as expected"
+              if self.verbose: print("Program was successful as expected")
 
             except Exception:
               # If all else fails, make sure we unlock
               # the sector before leaving this test.
               with Timeout(TIMEOUT_LOCK_SECTOR) as timeout:
-                if self.verbose: print "Had exception, unlocking STM sector:", SECTOR
+                if self.verbose: print("Had exception, unlocking STM sector:", SECTOR)
                 piksi_flash.unlock_sector(SECTOR)
               raise
 
             # Clean up - write valid STM firmware over sector that was erased.
             with Timeout(TIMEOUT_WRITE_STM) as timeout:
               if self.verbose:
-                print "Cleaning up, writing firmware to STM flash"
+                print("Cleaning up, writing firmware to STM flash")
                 piksi_flash.write_ihx(self.stm_fw, sys.stdout, mod_print=0x10)
               else:
                 piksi_flash.write_ihx(self.stm_fw)
@@ -612,11 +612,11 @@ def main():
   sys.argv[1:] = args.unittest_args
 
   # Load firmware for tests.
-  if verbose: print "Loading STM firmware:", stm_fw_fname
+  if verbose: print("Loading STM firmware:", stm_fw_fname)
   stm_fw = IntelHex(stm_fw_fname)
-  if verbose: print "Loading NAP firmware:", nap_fw_fname
+  if verbose: print("Loading NAP firmware:", nap_fw_fname)
   nap_fw = IntelHex(nap_fw_fname)
-  if verbose: print ""
+  if verbose: print("")
 
   # Hack: Do Piksi setup before running TestBootloader tests.
   # unittest.TestCase.setUpClass can't access the instance variables passed

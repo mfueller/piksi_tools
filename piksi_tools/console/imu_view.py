@@ -66,7 +66,7 @@ class IMUView(HasTraits):
           self.imu_temp = 23 + sbp_msg.temp / 2.**9
           self.imu_conf = sbp_msg.imu_conf
       else:
-          print "IMU type %d not known" % sbp_msg.imu_type
+          print(("IMU type %d not known" % sbp_msg.imu_type))
 
   def imu_raw_callback(self, sbp_msg, **metadata):
       self.acc[:-1,:] = self.acc[1:,:]

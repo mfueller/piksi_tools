@@ -12,7 +12,7 @@
 import time
 import struct
 import sys
-import serial_link
+from . import serial_link
 
 from piksi_tools.heartbeat import *
 from sbp.flash             import *
@@ -99,7 +99,7 @@ def main():
     with Handler(Framer(driver.read, driver.write)) as link:
       with STMUniqueID(link) as stm_unique_id:
         unique_id = stm_unique_id.get_id()
-      print "STM Unique ID =", "0x" + ''.join(["%02x" % (b) for b in unique_id])
+      print(("STM Unique ID =", "0x" + ''.join(["%02x" % (b) for b in unique_id])))
 
 if __name__ == "__main__":
   main()

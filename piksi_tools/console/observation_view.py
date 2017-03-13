@@ -79,7 +79,7 @@ class ObservationView(HasTraits):
 
   def update_obs(self):
     self._obs_table_list =\
-      [(prn,) + obs for prn, obs in sorted(self.obs.items(),
+      [(prn,) + obs for prn, obs in sorted(list(self.obs.items()),
                                            key=lambda x: x[0])]
     self.obs_count = len(self.obs)
     self.l1_count = sum(['L1' in obs for obs in self.obs])
@@ -112,7 +112,7 @@ class ObservationView(HasTraits):
          self.gps_week != wn or\
          self.prev_obs_count + 1 != count or\
          self.prev_obs_total != total:
-      print "We dropped a packet. Skipping this observation sequence"
+      print("We dropped a packet. Skipping this observation sequence")
       self.prev_obs_count = -1
       return
     else:

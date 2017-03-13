@@ -26,7 +26,7 @@ images.
 import time
 import struct
 import sys
-import serial_link
+from . import serial_link
 
 from sbp.bootload import *
 from sbp.logging import *
@@ -187,37 +187,37 @@ def main():
 
       # Tell Bootloader we want to write to the flash.
       with Bootloader(link) as piksi_bootloader:
-        print "Waiting for bootloader handshake message from Piksi ...",
+        print("Waiting for bootloader handshake message from Piksi ...", end=' ')
         sys.stdout.flush()
         try:
           handshake_received = piksi_bootloader.handshake(args.timeout[0])
         except KeyboardInterrupt:
           return
         if not (handshake_received and piksi_bootloader.handshake_received):
-          print "No handshake received."
+          print("No handshake received.")
           sys.exit(1) 
-        print "received."
-        print "Piksi Onboard Bootloader Version:", piksi_bootloader.version
+        print("received.")
+        print("Piksi Onboard Bootloader Version:", piksi_bootloader.version)
         if piksi_bootloader.sbp_version > (0, 0):
-          print "Piksi Onboard SBP Protocol Version:", piksi_bootloader.sbp_version
+          print("Piksi Onboard SBP Protocol Version:", piksi_bootloader.sbp_version)
 
         # Catch all other errors and exit cleanly.
         try:
-          import flash
+          from . import flash
           with flash.Flash(link, flash_type=("STM" if use_stm else "M25"),
                            sbp_version=piksi_bootloader.sbp_version, max_queued_ops=int(args.max_queued_ops[0])) as piksi_flash:
             if erase:
               for s in range(1,12):
-                print "\rErasing STM Sector", s,
+                print("\rErasing STM Sector", s, end=' ')
                 sys.stdout.flush()
                 piksi_flash.erase_sector(s)
-              print
+              print()
 
             from intelhex import IntelHex
             ihx = IntelHex(args.file)
             piksi_flash.write_ihx(ihx, sys.stdout, mod_print=0x10)
 
-            print "Bootloader jumping to application"
+            print("Bootloader jumping to application")
             piksi_bootloader.jump_to_app()
         except:
           import traceback

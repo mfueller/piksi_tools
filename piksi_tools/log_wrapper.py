@@ -28,7 +28,7 @@ def main():
   for line in sys.stdin:
     data = json.loads(line)
     outdata = wrap_sbp_dict(data, index, timestamp)
-    print json.dumps(outdata)
+    print((json.dumps(outdata)))
     index += index_increment_guess
     timestamp += time_increment_guess
 

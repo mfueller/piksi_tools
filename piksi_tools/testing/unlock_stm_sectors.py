@@ -37,26 +37,26 @@ def main():
     # Handler with context
     with Handler(driver.read, driver.write) as link:
       with Bootloader(link) as piksi_bootloader:
-        print "Waiting for bootloader handshake message from Piksi ...",
+        print("Waiting for bootloader handshake message from Piksi ...", end=' ')
         sys.stdout.flush()
         try:
           piksi_bootloader.handshake()
         except KeyboardInterrupt:
           return
-        print "received."
-        print "Piksi Onboard Bootloader Version:", piksi_bootloader.version
+        print("received.")
+        print("Piksi Onboard Bootloader Version:", piksi_bootloader.version)
         if piksi_bootloader.sbp_version > (0, 0):
-          print "Piksi Onboard SBP Protocol Version:", piksi_bootloader.sbp_version
+          print("Piksi Onboard SBP Protocol Version:", piksi_bootloader.sbp_version)
 
         # Catch all other errors and exit cleanly.
         try:
           with Flash(link, flash_type="STM",
                      sbp_version=piksi_bootloader.sbp_version) as piksi_flash:
             for s in range(0,12):
-              print "\rUnlocking STM Sector", s,
+              print("\rUnlocking STM Sector", s, end=' ')
               sys.stdout.flush()
               piksi_flash.unlock_sector(s)
-            print
+            print()
         except:
           import traceback
           traceback.print_exc()

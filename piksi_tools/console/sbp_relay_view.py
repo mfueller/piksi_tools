@@ -113,13 +113,13 @@ class SkylarkWatchdogThread(threading.Thread):
       try:
         self.stopped_callback()
       except:
-        print "Error stopping SkylarkWatchdogThread: User supplied callback has unhandeled exception"
+        print("Error stopping SkylarkWatchdogThread: User supplied callback has unhandeled exception")
         import traceback
-        print traceback.format_exc()        
+        print((traceback.format_exc()))        
     if self.verbose:
-      print ("SkylarkWatchdogThread initialized "
+      print((("SkylarkWatchdogThread initialized "
              "at {0} and connected since {1} stopped at {2}").format(
-                self.get_init_time(), self.get_connect_time(), self.get_stop_time())
+                self.get_init_time(), self.get_connect_time(), self.get_stop_time())))
 
   def stopped(self):
     """ determines if thread is stopped currently """
@@ -158,8 +158,8 @@ class SkylarkWatchdogThread(threading.Thread):
     assert isinstance(read_config, SkylarkConsoleConnectConfig)
     self._connect_time = time.time()
     if self.verbose:
-      print "SkylarkWatchdogThread connection attempted at time {0} with parameters {1}".format(
-                 self.get_connect_time(), read_config) 
+      print(("SkylarkWatchdogThread connection attempted at time {0} with parameters {1}".format(
+                 self.get_connect_time(), read_config))) 
     i = 0
     repeats = 5
     http = HTTPDriver(device_uid=read_config.base_uuid, url=read_config.skylark_url)
@@ -173,7 +173,7 @@ class SkylarkWatchdogThread(threading.Thread):
     time.sleep(1)
 
     # If we get here, we were able to connect as a base
-    print "Attempting to read observation from Skylark..."
+    print("Attempting to read observation from Skylark...")
     while (not self.stopped() and http 
            and not http.connect_read(device_uid=read_config.rover_uuid, pragma=read_config.rover_pragma)):
       time.sleep(0.1)
@@ -190,11 +190,11 @@ class SkylarkWatchdogThread(threading.Thread):
         return -2 # Unable to connect as rover
 
     # If we get here, we were able to connect as rover
-    print "Connected as a rover!"
+    print("Connected as a rover!")
     with Handler(Framer(http.read, http.write)) as net_link:
       fwd = Forwarder(net_link, swriter(link))
       if self.verbose:
-        print "Starting forwarder"
+        print("Starting forwarder")
       fwd.start()
       # now we sleep until we stop the thread or our http handler dies
       while not self.stopped() and net_link.is_alive():
@@ -202,10 +202,10 @@ class SkylarkWatchdogThread(threading.Thread):
 
     # when we leave this loop, we are no longer connected to skylark so the fwd should be stopped
     if self.verbose:
-      print "Stopping forwarder"
+      print("Stopping forwarder")
     fwd.stop()
     if self.verbose:
-      print "Stopping HTTPDriver"
+      print("Stopping HTTPDriver")
     http.close() 
     # now manage the return code
     if self.stopped():
@@ -216,12 +216,12 @@ class SkylarkWatchdogThread(threading.Thread):
   def run(self):
     """ Continuously try and reconnect until thread stopped by other means """
     while not self.stopped():
-      print "Attempting to connect to skylark..."
+      print("Attempting to connect to skylark...")
       ret = self.connect(self.link, self.skylark_config)
       if self.verbose:
         "Returned from SkylarkWatchdogThread.connect with code {0}".format(ret)
       time.sleep(0.25)
-      print "Network Observation Stream Disconnected."
+      print("Network Observation Stream Disconnected.")
 
 class SbpRelayView(HasTraits):
   """
@@ -376,9 +376,9 @@ class SbpRelayView(HasTraits):
     elif serial_id:
       device_uid = str(get_uuid(channel, serial_id % 1000))
     else:
-      print "Improper call of set_route, either a serial number or UUID should be passed"
+      print("Improper call of set_route, either a serial number or UUID should be passed")
       device_uid = str(get_uuid(channel, 1234))
-      print "Setting UUID to default value of {0}".format(device_uid)
+      print(("Setting UUID to default value of {0}".format(device_uid)))
     self.device_uid = device_uid
 
   def _prompt_setting_error(self, text):
@@ -403,15 +403,15 @@ class SbpRelayView(HasTraits):
          not self.skylark_watchdog_thread.stopped():
         self.skylark_watchdog_thread.stop()
       else:
-        print ("Unable to disconnect: Skylark watchdog thread "
+        print((("Unable to disconnect: Skylark watchdog thread "
                "inititalized at {0} and connected since {1} has " 
                "already been stopped").format(self.skylark_watchdog_thread.get_init_time(),
-                                              self.skylark_watchdog_thread.get_connect_time())
+                                              self.skylark_watchdog_thread.get_connect_time())))
       self.connected_rover = False
     except:
       self.connected_rover = False
       import traceback
-      print traceback.format_exc()
+      print((traceback.format_exc()))
 
   def _connect_rover_fired(self):
     """Handle callback for HTTP rover connections.  Launches an instance of skylark_watchdog_thread.
@@ -437,7 +437,7 @@ class SbpRelayView(HasTraits):
         self.skylark_watchdog_thread.stop()
       self.connected_rover = False
       import traceback
-      print traceback.format_exc()
+      print((traceback.format_exc()))
 
   def _start_fired(self):
     """Handle start udp broadcast button. Registers callbacks on
@@ -451,7 +451,7 @@ class SbpRelayView(HasTraits):
       self.link.add_callback(self.func, self.msgs)
     except:
       import traceback
-      print traceback.format_exc()
+      print((traceback.format_exc()))
 
   def _stop_fired(self):
     """Handle the stop udp broadcast button. It uses the self.funcs and
@@ -466,4 +466,4 @@ class SbpRelayView(HasTraits):
       self.running = False
     except:
       import traceback
-      print traceback.format_exc()
+      print((traceback.format_exc()))

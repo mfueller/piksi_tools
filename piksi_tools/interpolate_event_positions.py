@@ -27,11 +27,11 @@ def lin_interp(oldpos, newpos, oldtow, newtow, triggertow):
   """
   #Warning for not logical TOW values 
   if not(oldtow < triggertow < newtow) :
-    print 'TOW values ERROR at {0}'.format(triggertow)
+    print(('TOW values ERROR at {0}'.format(triggertow)))
 
   #Warning for big end-point differences
   if (newtow- oldtow) > 3000 :
-    print "Interpolation end-points for Trigger at TOW {0} too far away".format(triggertow)
+    print(("Interpolation end-points for Trigger at TOW {0} too far away".format(triggertow)))
 
   d = float(newpos- oldpos)
   t = (newtow- oldtow) 
@@ -279,7 +279,7 @@ def collect_positions(infilename, msgtype, debouncetime):
   """
   with open(infilename, 'r') as infile:
     with JSONLogIterator(infile) as log:
-      log = log.next()
+      log = next(log)
 
       #declaring all lists 
       message_type = []
@@ -293,7 +293,7 @@ def collect_positions(infilename, msgtype, debouncetime):
 
       while True:
         try:
-          msg, metadata = log.next()
+          msg, metadata = next(log)
           hostdelta = metadata['delta']
           hosttimestamp = metadata['timestamp']
           valid_msg = ["MsgBaselineECEF", "MsgPosECEF", "MsgBaselineNED", "MsgPosLLH", "MsgExtEvent"]
@@ -318,7 +318,7 @@ def collect_positions(infilename, msgtype, debouncetime):
               msg_depth.append(msg.height)
               msg_sats.append(msg.n_sats)
             elif msg.__class__.__name__ == "MsgExtEvent":
-              print msg.tow
+              print((msg.tow))
               msg_horizontal.append("0")
               msg_vertical.append("0")
               msg_depth.append("0")
@@ -326,14 +326,14 @@ def collect_positions(infilename, msgtype, debouncetime):
             numofmsg += 1
 
         except StopIteration:
-          print "reached end of file after {0} milli-seconds".format(hostdelta)
+          print(("reached end of file after {0} milli-seconds".format(hostdelta)))
           fix_trigger_rollover(message_type, msg_tow, numofmsg)
-          print 'done roll'
+          print('done roll')
           fix_trigger_debounce(message_type, msg_tow, numofmsg, debouncetime)
-          print ' done bebounce'
+          print(' done bebounce')
           get_trigger_positions(message_type, msg_tow, msgtype, numofmsg, msg_horizontal, msg_vertical, msg_depth, msg_sats)
-          print 'done interpolation'
-          print 
+          print('done interpolation')
+          print() 
           numofmsg =  rid_access_data (message_type, msg_tow, msg_horizontal , msg_vertical , msg_depth , msg_flag , msg_sats , numofmsg)
 
           return message_type, msg_tow, msg_horizontal , msg_vertical , msg_depth , msg_flag , msg_sats , numofmsg
@@ -366,6 +366,6 @@ if __name__ == '__main__':
       a, b, c, d, e, f, g, h = collect_positions(args.filename[0], args.type[0], args.debouncetime[0])
       display_data(a, b, c, d, e, f, g, h, args.type[0], args.outfile[0])
     else :
-      print "Please provide a filename argument"
+      print("Please provide a filename argument")
   else :
-    print "Incorrect Message Type!!"
+    print("Incorrect Message Type!!")

@@ -12,7 +12,7 @@
 import math as m
 import numpy as n
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 NAV_GM = 3.986005e14
 NAV_OMEGAE_DOT = 7.2921151467e-005
@@ -27,7 +27,7 @@ def time_of_week():
 
 class Sat:
   def __init__(self, yuma_block):
-    fields = map(lambda x: x[25:], yuma_block)
+    fields = [x[25:] for x in yuma_block]
     self.prn     = int(fields[0])
     self.healthy = (int(fields[1]) == 0)
     self.ecc     = float(fields[2])
@@ -139,7 +139,7 @@ class Almanac:
     return (self.sats != None)
 
   def download_almanac(self):
-    u = urllib2.urlopen('http://www.navcen.uscg.gov/?pageName=currentAlmanac&format=yuma')
+    u = urllib.request.urlopen('http://www.navcen.uscg.gov/?pageName=currentAlmanac&format=yuma')
     if u:
       self.process_yuma(u.readlines())
 
@@ -155,7 +155,7 @@ class Almanac:
       for (n, line) in enumerate(yuma):
         if line[:3] == "ID:":
           blocks += [yuma[n:n+13]]
-      self.sats = map(lambda bl: Sat(bl), blocks)
+      self.sats = [Sat(bl) for bl in blocks]
     else:
       self.sats = None
 
@@ -164,15 +164,15 @@ class Almanac:
       tow = time_of_week()
 
     if self.sats:
-      dopps = map(lambda s: (s.prn,)+s.calc_vis_dopp(tow, location, elevation_mask=0.0), self.sats)
-      dopps = filter(lambda (prn, dopp, el): (dopp != None), dopps)
+      dopps = [(s.prn,)+s.calc_vis_dopp(tow, location, elevation_mask=0.0) for s in self.sats]
+      dopps = [prn_dopp_el for prn_dopp_el in dopps if (prn_dopp_el[1] != None)]
       return dopps
     else:
       return None
 
 if __name__ == "__main__":
   alm = Almanac()
-  print "Downloading current almanac"
+  print("Downloading current almanac")
   alm.download_almanac()
-  print "Dopplers:"
-  print alm.get_dopps()
+  print("Dopplers:")
+  print((alm.get_dopps()))

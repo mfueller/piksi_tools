@@ -24,12 +24,12 @@ import datetime
 from_base = lambda msg: msg.sender == 0
 
 def _is_nested(attr):
-  return len(attr.keys()) > 0 and isinstance(attr[attr.keys()[0]], dict)
+  return len(list(attr.keys())) > 0 and isinstance(attr[list(attr.keys())[0]], dict)
 
 def dict_depth(d, depth=0):
   if not isinstance(d, dict) or not d:
     return depth
-  return max(dict_depth(v, depth + 1) for k, v in d.iteritems())
+  return max(dict_depth(v, depth + 1) for k, v in list(d.items()))
 
 class StoreToRINEX(object):
   """Stores observations as RINEX.
@@ -111,14 +111,14 @@ class StoreToRINEX(object):
 
   def save(self, filename):
     if os.path.exists(filename):
-      print "Unlinking %s, which already exists!" % filename
+      print(("Unlinking %s, which already exists!" % filename))
       os.unlink(filename)
     try:
       f = open(filename, mode='w')
 
       header_written = False
       last_t = 0
-      for t, sats in sorted(self.rover_obs.iteritems()):
+      for t, sats in sorted(self.rover_obs.items()):
         if not header_written:
           header = """     2.11           OBSERVATION DATA    G (GPS)             RINEX VERSION / TYPE
 sbp2rinex                               %s UTC PGM / RUN BY / DATE
@@ -141,12 +141,12 @@ sbp2rinex                               %s UTC PGM / RUN BY / DATE
                                       t.second + t.microsecond * 1e-6,
                                       len(sats)))
 
-        for prn, obs in sorted(sats.iteritems()):
+        for prn, obs in sorted(sats.items()):
           f.write('G%02d' % (prn))
         f.write('   ' * (12 - len(sats)))
         f.write('\n')
 
-        for (prn), obs in sorted(sats.iteritems()):
+        for (prn), obs in sorted(sats.items()):
           # G    3 C1C L1C S1C
           if obs.get('P', None):
             f.write("%14.3f " % obs.get('P', 0))
@@ -174,7 +174,7 @@ sbp2rinex                               %s UTC PGM / RUN BY / DATE
           last_t = t
     except:
       import traceback
-      print traceback.format_exc()
+      print((traceback.format_exc()))
     finally:
       f.close()
 
@@ -185,14 +185,14 @@ def wrapper(log_datafile, filename, num_records):
   start = time.time()
   with open(log_datafile, 'r') as infile:
     with JSONLogIterator(infile) as log:
-      for msg, data in log.next():
+      for msg, data in next(log):
         i += 1
         if i % logging_interval == 0:
-          print "Processed %d records! @ %.1f sec." \
-            % (i, time.time() - start)
+          print(("Processed %d records! @ %.1f sec." \
+            % (i, time.time() - start)))
         processor.process_message(msg)
         if num_records is not None and i >= int(num_records):
-          print "Processed %d records!" % i
+          print(("Processed %d records!" % i))
           break
       processor.save(filename)
 

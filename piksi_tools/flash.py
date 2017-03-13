@@ -110,13 +110,13 @@ def ihx_ranges(ihx):
       List of min/max tuples of occupied address ranges.
   """
   def first_last(x):
-    first = x.next()
+    first = next(x)
     last = first
     for last in x:
       pass
     return (first[1], last[1])
   return [first_last(v) for k, v in
-          groupby(enumerate(ihx.addresses()), lambda (i, x) : i - x)]
+          groupby(enumerate(ihx.addresses()), lambda i_x : i_x[0] - i_x[1])]
 
 def sectors_used(addrs, addr_sector_map):
   """
@@ -162,7 +162,7 @@ def ihx_n_ops(ihx, addr_sector_map, erase=True):
   """
   ihx_addrs = ihx_ranges(ihx)
   erase_ops = len(sectors_used(ihx_addrs, addr_sector_map))
-  program_ops_addr_args = [range(s,e,ADDRS_PER_OP) for s,e in ihx_addrs]
+  program_ops_addr_args = [list(range(s,e,ADDRS_PER_OP)) for s,e in ihx_addrs]
   program_ops = sum([len(l) for l in program_ops_addr_args])
   read_ops = program_ops # One read callback for every program callback.
   if erase:
@@ -445,7 +445,7 @@ class Flash():
     ret = ord(sbp_msg.payload)
 
     if (ret != 0):
-      print "Flash operation returned error (%d)" % ret
+      print(("Flash operation returned error (%d)" % ret))
 
     self.dec_n_queued_ops()
     assert self.get_n_queued_ops() >= 0, \
@@ -513,7 +513,7 @@ class Flash():
     # is used by bootloader to check that the application is valid, so program
     # from high to low to ensure this address is programmed last.
     for start, end in reversed(ihx_addrs):
-      for addr in reversed(range(start, end, ADDRS_PER_OP)):
+      for addr in reversed(list(range(start, end, ADDRS_PER_OP))):
         self.status = self.flash_type + " Flash: Programming address" + \
                                         " 0x%08X" % addr
         if mod_print == 0 or mod_print != 0 and self.print_count % mod_print == 0:

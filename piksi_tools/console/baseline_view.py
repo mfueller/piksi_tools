@@ -150,7 +150,7 @@ class BaselineView(HasTraits):
       GUI.invoke_later(self.baseline_callback, sbp_msg)
 
   def update_table(self):
-    self._table_list = self.table.items()
+    self._table_list = list(self.table.items())
 
   def gps_time_callback(self, sbp_msg, **metadata):
     if sbp_msg.msg_type == SBP_MSG_GPS_TIME_DEP_A:
@@ -372,7 +372,7 @@ class BaselineView(HasTraits):
         line_width=1.5,
         marker_size=5)
     plot_labels = [' Base Position','DGPS', 'RTK Float', 'RTK Fixed']
-    plots_legend = dict(zip(plot_labels, [ref, cur_dgnss, cur_float, cur_fixed]))
+    plots_legend = dict(list(zip(plot_labels, [ref, cur_dgnss, cur_float, cur_fixed])))
     self.plot.legend.plots = plots_legend
     self.plot.legend.labels = plot_labels # sets order
     self.plot.legend.visible = True

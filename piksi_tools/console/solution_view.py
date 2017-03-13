@@ -168,7 +168,7 @@ class SolutionView(HasTraits):
       GUI.invoke_later(self.pos_llh_callback, sbp_msg)
 
   def update_table(self):
-    self._table_list = self.table_spp.items()
+    self._table_list = list(self.table_spp.items())
 
   def auto_survey(self):
     if self.last_soln.flags != 0: 
@@ -485,7 +485,7 @@ class SolutionView(HasTraits):
     rtkfix = self.plot.plot(('cur_lng_fixed', 'cur_lat_fixed'), type='scatter', name=mode_dict[FIXED_MODE],
       color=color_dict[FIXED_MODE], marker='plus', line_width=1.5, marker_size=5.0)
     plot_labels = ['SPP', 'DGPS', "RTK float", "RTK fixed"]
-    plots_legend = dict(zip(plot_labels, [spp, dgnss, rtkfloat, rtkfix]))
+    plots_legend = dict(list(zip(plot_labels, [spp, dgnss, rtkfloat, rtkfix])))
     self.plot.legend.plots = plots_legend
     self.plot.legend.labels = plot_labels # sets order
     self.plot.legend.visible = True

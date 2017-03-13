@@ -35,7 +35,7 @@ def get_device_location(device_file):
   return (bus, dev, port)
 
 # Calculate ports to power cycle
-ports = map(get_device_location, device_files)
+ports = list(map(get_device_location, device_files))
 
 # Turn off all devices
 for bus, dev, port in ports:

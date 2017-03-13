@@ -37,7 +37,7 @@ from sbp.piksi      import *
 from sbp.settings   import *
 from sbp.system     import *
 
-from settings_list import SettingsList
+from .settings_list import SettingsList
 
 class SettingBase(HasTraits):
   name = Str()
@@ -93,7 +93,7 @@ class Setting(SettingBase):
     if (old != new and
         old is not Undefined and
         new is not Undefined):
-      if type(self.value) == unicode:
+      if type(self.value) == str:
         self.value = self.value.encode('ascii', 'replace')
       self.settings.set(self.section, self.name, self.value)
 
@@ -272,8 +272,8 @@ class SettingsView(HasTraits):
     sections = sorted(self.settings.keys())
     for sec in sections:
       this_section = []
-      for name, setting in sorted(self.settings[sec].iteritems(),
-        key=lambda (n, s): s.ordering):
+      for name, setting in sorted(iter(list(self.settings[sec].items())),
+        key=lambda n_s: n_s[1].ordering):
         if not setting.expert or (self.expert and setting.expert):
           this_section.append(setting)
       if this_section:
@@ -302,7 +302,7 @@ class SettingsView(HasTraits):
       format_type = None
     else:
       setting_type, setting_format = format_type.split(':')
-    if not self.settings.has_key(section):
+    if section not in self.settings:
       self.settings[section] = {}
     if format_type is None:
       # Plain old setting, no format information
@@ -380,6 +380,6 @@ class SettingsView(HasTraits):
       try:
         self._settings_read_button_fired()
       except IOError:
-        print "IOError in settings_view startup call of _settings_read_button_fired."
-        print "Verify that write permissions exist on the port."
+        print("IOError in settings_view startup call of _settings_read_button_fired.")
+        print("Verify that write permissions exist on the port.")
     self.python_console_cmds = {'settings': self}

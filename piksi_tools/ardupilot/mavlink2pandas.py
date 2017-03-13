@@ -1,4 +1,4 @@
-from mavlink_decode import extractSBP
+from .mavlink_decode import extractSBP
 import os
 import pandas as pd
 import tempfile
@@ -40,11 +40,11 @@ def extractMAVLINK(filename, outfile, msg_types_to_save):
       out_dict[m.get_type()] = msg_timestamp_dict
     else:
       if os.path.exists(outfile):
-        print "Unlinking %s, which already exists!" % outfile
+        print(("Unlinking %s, which already exists!" % outfile))
         os.unlink(outfile)
       f = pd.HDFStore(outfile, mode='w')
       try:
-        tabs = [key for key in out_dict.iterkeys()]
+        tabs = [key for key in list(out_dict.keys())]
         for tab in tabs:
           attr = out_dict[tab]
           f.put(tab, pd.DataFrame(attr))
@@ -83,7 +83,7 @@ def main():
   filename = args.dataflashfile
   outfile = args.outfile[0]
   if extractMAVLINK(filename, outfile, args.types):
-    print "Mavlink log succesfully written to {0}.".format(outfile)
+    print(("Mavlink log succesfully written to {0}.".format(outfile)))
 
 if __name__ == "__main__":
   main()

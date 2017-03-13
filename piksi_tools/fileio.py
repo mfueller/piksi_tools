@@ -9,7 +9,7 @@
 # EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
-import serial_link
+from . import serial_link
 import random
 import threading
 import time
@@ -56,7 +56,7 @@ class SelectiveRepeater(object):
     self.link.remove_callback(self._cb, self.msg_type)
 
   def _cb(self, msg, **metadata):
-    if msg.sequence in self.window.keys():
+    if msg.sequence in list(self.window.keys()):
       if self.cb:
         self.cb(self.window[msg.sequence][0], msg)
       del self.window[msg.sequence]
@@ -65,7 +65,7 @@ class SelectiveRepeater(object):
   def _wait(self):
     while not self.sem.acquire(SBP_FILEIO_TIMEOUT):
       tnow = time.time()
-      for seq in self.window.keys():
+      for seq in list(self.window.keys()):
         try:
           msg, sent_time, tries = self.window[seq]
         except: continue
@@ -258,7 +258,7 @@ def print_dir_listing(files):
       List of file names in the directory.
   """
   for f in files:
-    print f
+    print(f)
 
 def get_args():
   """
@@ -319,15 +319,15 @@ def main():
         elif args.read:
           data = f.read(args.read[0])
           if args.hex:
-            print hexdump(data)
+            print((hexdump(data)))
           else:
-            print data
+            print(data)
         elif args.delete:
           f.remove(args.delete[0])
         elif args.list is not None:
           print_dir_listing(f.readdir(args.list[0]))
         else:
-          print "No command given, listing root directory:"
+          print("No command given, listing root directory:")
           print_dir_listing(f.readdir())
       except KeyboardInterrupt:
         pass

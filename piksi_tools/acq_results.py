@@ -15,7 +15,7 @@ The :mod:`piksi_tools.acq_results` module contains functions related to
 monitoring acquisition.
 """
 
-import serial_link
+from . import serial_link
 import time
 
 from numpy import mean
@@ -61,7 +61,7 @@ class AcqResults():
     snrs = []
     # Get the max SNR for each PRN.
     for prn in set([a.sid.sat for a in self.acqs]):
-      acqs_prn = filter(lambda x: x.sid.sat == prn, self.acqs)
+      acqs_prn = [x for x in self.acqs if x.sid.sat == prn]
       acqs_prn_max_snr = max([a.snr for a in acqs_prn])
       if acqs_prn_max_snr >= snr_threshold:
         snrs += [max([a.snr for a in acqs_prn])]
@@ -117,7 +117,7 @@ def main():
 
       try:
         while True:
-          print acq_results
+          print(acq_results)
           time.sleep(0.1)
       except KeyboardInterrupt:
         pass

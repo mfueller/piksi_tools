@@ -3,7 +3,7 @@
 import yaml
 import jinja2
 import re
-from settings_list import SettingsList
+from .settings_list import SettingsList
 import os
 
 swift_nav_style_path = "../libsbp/docs"
@@ -12,7 +12,7 @@ myenviron = os.environ
 for each in environment_variables_to_append:
   try:
     texinputs = myenviron[each]
-    print texinputs
+    print(texinputs)
     myenviron[each]=".:" + swift_nav_style_path + ":" + texinputs
   except KeyError:
     myenviron[each]=".:" + swift_nav_style_path

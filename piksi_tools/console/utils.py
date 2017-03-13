@@ -91,7 +91,7 @@ def get_mode(msg):
       mode = 3
   elif msg.msg_type not in [SBP_MSG_BASELINE_NED_DEP_A, SBP_MSG_POS_LLH_DEP_A, 
                             SBP_MSG_POS_LLH, SBP_MSG_BASELINE_NED] :
-    print "called get_mode with unsupported message type: {0}".format(msg.msg_type)
+    print(("called get_mode with unsupported message type: {0}".format(msg.msg_type)))
   return mode
 
 class MultilineTextEditor(TextEditor):
@@ -149,7 +149,7 @@ def determine_path():
           root = os.path.realpath(root)
         return os.path.dirname(os.path.abspath(root))
     except:
-        print "There is no __file__ variable. Please contact the author."
+        print("There is no __file__ variable. Please contact the author.")
 
 def datetime_2_str(datetm):
   return (datetm.strftime('%Y-%m-%d %H:%M'), datetm.strftime('%S.%f')) 
